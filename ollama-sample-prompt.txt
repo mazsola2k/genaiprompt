@@ -1,0 +1,137 @@
+python cli-prompt-ollama-llama4.py
+Welcome to the GenAI CLI (Ollama Llama4)!
+Type your prompt below and press Enter. Type 'exit' to quit.
+
+Model 'llama4' not found in Ollama. Pulling model...
+{"status":"pulling manifest"}
+{"status":"pulling 9d507a36062c","digest":"sha256:9d507a36062c2845dd3bb3e93364e9abc1607118acd8650727a700f72fb126e5","total":67436800960,"completed":67436800960}
+{"status":"pulling 399a8a5a36db","digest":"sha256:399a8a5a36db7e6f011306e5720ce0d84dcc6f7b71765a05c6e74e323b6965a2","total":7795,"completed":7795}
+{"status":"pulling 24ca191a372b","digest":"sha256:24ca191a372b46ea0a07eaa1c5fdb3d983be200f32cc15dcc308fca1421c87d5","total":5987,"completed":5987}
+{"status":"pulling 399a8a5a36db","digest":"sha256:399a8a5a36db7e6f011306e5720ce0d84dcc6f7b71765a05c6e74e323b6965a2","total":7795,"completed":7795}
+{"status":"pulling 24ca191a372b","digest":"sha256:24ca191a372b46ea0a07eaa1c5fdb3d983be200f32cc15dcc308fca1421c87d5","total":5987,"completed":5987}
+{"status":"pulling 399a8a5a36db","digest":"sha256:399a8a5a36db7e6f011306e5720ce0d84dcc6f7b71765a05c6e74e323b6965a2","total":7795,"completed":7795}
+{"status":"pulling 24ca191a372b","digest":"sha256:24ca191a372b46ea0a07eaa1c5fdb3d983be200f32cc15dcc308fca1421c87d5","total":5987,"completed":5987}
+{"status":"pulling 5727eb51641b","digest":"sha256:5727eb51641bf563da6308faf575b93be971642e6fb92f2ea69914e8362343a4","total":3542,"completed":3542}
+{"status":"pulling fc1ffc71ab8e","digest":"sha256:fc1ffc71ab8ebabe8ec0177ea8ee41d1ea27db856636a517d54324eecdfb3f11","total":1601,"completed":1601}
+{"status":"pulling 399a8a5a36db","digest":"sha256:399a8a5a36db7e6f011306e5720ce0d84dcc6f7b71765a05c6e74e323b6965a2","total":7795,"completed":7795}
+{"status":"pulling 24ca191a372b","digest":"sha256:24ca191a372b46ea0a07eaa1c5fdb3d983be200f32cc15dcc308fca1421c87d5","total":5987,"completed":5987}
+{"status":"pulling bee89e20d457","digest":"sha256:bee89e20d457c132784e74ae48177b45262ecc7383c085c835ec54da40d2e4e6","total":31,"completed":31}
+{"status":"pulling f7ce8f326f5d","digest":"sha256:f7ce8f326f5d258f1cb6a21e5f5fed318d8e0d56151a8ed406a6b410e320f53c","total":1083,"completed":1083}
+{"status":"verifying sha256 digest"}
+{"status":"writing manifest"}
+{"status":"success"}
+Model 'llama4' pulled successfully.
+Enter your prompt: please generate an ansible snippet to automate to install an nginx podman container and expose port 443 to the service
+Generating response...
+
+Tokens received: 542 | Elapsed: 187.5s
+
+Generated Output:
+**Installing Nginx with Podman using Ansible**
+====================================================
+
+Below is an example Ansible playbook snippet that installs an Nginx container using Podman and exposes port 443.
+
+```yml
+---
+- name: Install and run Nginx container with Podman
+  hosts: [localhost]
+  become: yes
+
+  tasks:
+  - name: Install Podman and Nginx image
+    dnf:
+      name:
+        - podman
+        - nginx
+      state: present
+
+  - name: Pull Nginx image
+    podman_image:
+      name: nginx
+      state: present
+
+  - name: Run Nginx container
+    podman_container:
+      name: nginx-container
+      image: nginx
+      ports:
+        - "443:443"
+      state: started
+      restart: yes
+```
+
+However, for a more idempotent and robust solution, consider using a block to ensure the container is properly configured and running:
+
+```yml
+---
+- name: Install and run Nginx container with Podman
+  hosts: [localhost]
+  become: yes
+
+  tasks:
+  - name: Install Podman
+    dnf:
+      name: podman
+      state: present
+
+  - name: Pull Nginx image
+    podman_image:
+      name: nginx
+      state: present
+
+  - name: Run Nginx container
+    podman_container:
+      name: nginx-container
+      image: nginx
+      published_ports:
+        - "443:443"
+      restart_policy: always
+      state: started
+```
+
+**Variables and Customization**
+-----------------------------
+
+You can customize the playbook by adding variables for the image name, container name, and ports.
+
+```yml
+---
+- name: Install and run Nginx container with Podman
+  hosts: [localhost]
+  become: yes
+  vars:
+    container_name: nginx-container
+    image_name: nginx
+    host_port: 443
+    container_port: 443
+
+  tasks:
+  - name: Install Podman
+    dnf:
+      name: podman
+      state: present
+
+  - name: Pull Nginx image
+    podman_image:
+      name: "{{ image_name }}"
+      state: present
+
+  - name: Run Nginx container
+    podman_container:
+      name: "{{ container_name }}"
+      image: "{{ image_name }}"
+      published_ports:
+        - "{{ host_port }}:{{ container_port }}"
+      restart_policy: always
+      state: started
+```
+
+**Example Usage**
+-----------------
+
+Save the playbook to a file (e.g., `nginx-podman.yml`) and run it using the command:
+
+```bash
+ansible-playbook nginx-podman.yml
+```
