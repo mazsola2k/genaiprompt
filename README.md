@@ -1,5 +1,17 @@
 Howto use llama-cpp-python @ Windows 11 natively:
 
+Pre-req:
+Fix Build Failure for llama-cpp-python on Windows 11
+🔧 Step 1: Ensure Visual Studio Build Tools are Properly Installed
+Make sure you’ve installed:
+
+✅ MSVC v143 - VS 2022 C++ x64/x86 build tools
+
+✅ C++ CMake tools for Windows
+
+✅ Windows 10 SDK
+
+
 pip install llama-cpp-python --force-reinstall --no-cache-dir --prefer-binary --extra-index-url https://jllllll.github.io/llama-cpp-python-cuBLAS-wheels/AVX2
 Looking in indexes: https://pypi.org/simple, https://jllllll.github.io/llama-cpp-python-cuBLAS-wheels/AVX2
 Collecting llama-cpp-python
